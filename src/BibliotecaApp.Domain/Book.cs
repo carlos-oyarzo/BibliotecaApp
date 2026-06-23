@@ -22,6 +22,6 @@ public class Book
     // si el libro se puede prestar o no. No la eliminen ni le cambien el nombre.
     public bool IsAvailable { get; set; } = true;
 
-    // ⚠️ Cuando Rol 4 mergee Loan.cs a main, descomentar esta línea:
-    // public List<Loan> Loans { get; set; } = new();
+    // Relación con préstamos: un libro puede estar en muchos préstamos (historial).
+    public List<Loan> Loans { get; set; } = new();
 }
