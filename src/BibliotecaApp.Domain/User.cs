@@ -23,7 +23,6 @@ public class User
     // Rol 3: pueden usar esto para diferenciar "admin" de "user" si hace falta.
     public string Role { get; set; } = "user";
 
-    // Relación con préstamos: un usuario puede tener muchos préstamos.
-    // Esto ya está configurado para que LoanService funcione.
-    public List<Loan> Loans { get; set; } = new();
+    // ⚠️ Cuando Rol 4 mergee Loan.cs a main, descomentar esta línea:
+    // public List<Loan> Loans { get; set; } = new();
 }

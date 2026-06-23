@@ -3,8 +3,6 @@
     <Project Path="src/BibliotecaApp.Data/BibliotecaApp.Data.csproj" />
     <Project Path="src/BibliotecaApp.Domain/BibliotecaApp.Domain.csproj" />
     <Project Path="src/BibliotecaApp.Services/BibliotecaApp.Services.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/BibliotecaApp.Tests/BibliotecaApp.Tests.csproj" />
+    <Project Path="src/BibliotecaApp.WinForms/BibliotecaApp.WinForms.csproj" />
   </Folder>
 </Solution>
