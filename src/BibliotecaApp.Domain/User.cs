@@ -1,0 +1,29 @@
+namespace BibliotecaApp.Domain;
+
+// =============================================
+// MODELO COMPARTIDO — Responsable: Juan Acevedo y Alejandro Viana
+// =============================================
+// Esta es la definición base del usuario en el sistema.
+// Rol 1 (db-seguridad): agreguen acá las validaciones de contraseña,
+//   el hashing con BCrypt y cualquier campo de seguridad que necesiten.
+// Rol 3 (backend-usuarios-libros): extiendan con los campos que requieran
+//   para el registro, login y gestión de usuarios.
+// =============================================
+
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+
+    // Rol 1: este campo almacena el hash BCrypt, NUNCA la contraseña en texto plano.
+    // Usar BCrypt.Net-Next para generar y verificar hashes.
+    public string PasswordHash { get; set; } = string.Empty;
+
+    // Rol 3: pueden usar esto para diferenciar "admin" de "user" si hace falta.
+    public string Role { get; set; } = "user";
+
+    // Relación con préstamos: un usuario puede tener muchos préstamos.
+    // Esto ya está configurado para que LoanService funcione.
+    public List<Loan> Loans { get; set; } = new();
+}
