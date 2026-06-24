@@ -6,10 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<biblioteca_API.Models.BibliotecaContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddCors();
 
 var app = builder.Build();
