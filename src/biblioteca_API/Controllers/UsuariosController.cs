@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Models;
+using biblioteca_API.Domain;
+using biblioteca_API.Data;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -14,35 +15,36 @@ public class UsuariosController : ControllerBase
 
     // GET: api/Usuarios
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios()
     {
-        return await _context.Users.ToListAsync();
+        return await _context.Usuarios.ToListAsync();
     }
 
     // GET: api/Usuarios/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<Usuarios>> GetUsuarios(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var usuarios = await _context.Usuarios.FindAsync(id);
 
-        if (user == null)
+        if (usuarios == null)
         {
             return NotFound();
         }
 
-        return user;
+        return usuarios;
     }
 
     // PUT: api/Usuarios/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(int? id, User user)
+    public async Task<IActionResult> PutUsuarios(int? id, Usuarios usuarios)
     {
-        if (id != user.Id)
+        if (id != usuarios.Id)
         {
             return BadRequest();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
+        _context.Entry(usuarios).State = EntityState.Modified;
 
         try
         {
@@ -50,7 +52,7 @@ public class UsuariosController : ControllerBase
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!UserExists(id))
+            if (!UsuariosExists(id))
             {
                 return NotFound();
             }
@@ -64,33 +66,34 @@ public class UsuariosController : ControllerBase
     }
 
     // POST: api/Usuarios
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+    public async Task<ActionResult<Usuarios>> PostUsuarios(Usuarios usuarios)
     {
-        _context.Users.Add(user);
+        _context.Usuarios.Add(usuarios);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        return CreatedAtAction("GetUsuarios", new { id = usuarios.Id }, usuarios);
     }
 
     // DELETE: api/Usuarios/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int? id)
+    public async Task<IActionResult> DeleteUsuarios(int? id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        var usuarios = await _context.Usuarios.FindAsync(id);
+        if (usuarios == null)
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
+        _context.Usuarios.Remove(usuarios);
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    private bool UserExists(int? id)
+    private bool UsuariosExists(int? id)
     {
-        return _context.Users.Any(e => e.Id == id);
+        return _context.Usuarios.Any(e => e.Id == id);
     }
 }
