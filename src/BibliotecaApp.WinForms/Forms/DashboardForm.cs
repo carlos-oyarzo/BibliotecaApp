@@ -1,26 +1,40 @@
 namespace BibliotecaApp.WinForms.Forms;
 
-// =============================================
-// DashboardForm — Pantalla principal
-// =============================================
-// Rol 2: este es el menú principal después del login.
-//
-// Controles que necesitan:
-//   - Varios Button grandes para navegar:
-//     * btnBooks    → "Gestión de Libros" → abre BookManagementForm
-//     * btnUsers    → "Gestión de Usuarios" → abre UserManagementForm
-//     * btnLoans    → "Préstamos" → abre LoanManagementForm
-//     * btnOverdue  → "Préstamos Vencidos" → abre OverdueLoansForm
-//   - Label con el nombre del usuario logueado (lblUserName)
-//
-// Recibir el usuario logueado por constructor:
-//   public DashboardForm(string userName) { ... }
-// =============================================
-
 public partial class DashboardForm : Form
 {
-    public DashboardForm()
+    // Receives the logged-in user's name from LoginForm
+    public DashboardForm(string userName)
     {
         InitializeComponent();
+        lblUserName.Text = $"Logged in as: {userName}";
+    }
+
+    private void btnBooks_Click(object sender, EventArgs e)
+    {
+        var form = new BookManagementForm();
+        form.Show();
+    }
+
+    private void btnUsers_Click(object sender, EventArgs e)
+    {
+        var form = new UserManagementForm();
+        form.Show();
+    }
+
+    private void btnLoans_Click(object sender, EventArgs e)
+    {
+        var form = new LoanManagementForm();
+        form.Show();
+    }
+
+    private void btnOverdue_Click(object sender, EventArgs e)
+    {
+        var form = new OverdueLoansForm();
+        form.Show();
+    }
+
+    private void DashboardForm_Load(object sender, EventArgs e)
+    {
+
     }
 }
