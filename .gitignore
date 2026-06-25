@@ -483,6 +483,8 @@ $RECYCLE.BIN/
 
 # Agent skills and configuration (local per developer)
 .atl/
+openspec/
+scripts/
 
 # Tests (local per developer)
 tests/

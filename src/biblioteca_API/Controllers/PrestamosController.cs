@@ -1,8 +1,7 @@
 ﻿using biblioteca_API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Domain;
-
+using BibliotecaApp.Domain;
 
 namespace biblioteca_API.Controllers
 {
@@ -19,53 +18,53 @@ namespace biblioteca_API.Controllers
 
         // Endpoint para registrar un nuevo préstamo
         [HttpPost]
-        public async Task<IActionResult> RegistrarPrestamo(int libroId, int usuarioId)
+        public async Task<IActionResult> RegistrarPrestamo(int bookId, int userId)
         {
             // 1. Verificar si el libro existe y si está disponible
-            var libro = await _context.Libros.FindAsync(libroId);
-            if (libro == null) return NotFound("El libro especificado no existe.");
-            if (!libro.Disponible) return BadRequest("El libro ya se encuentra prestado.");
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null) return NotFound("El libro especificado no existe.");
+            if (!book.IsAvailable) return BadRequest("El libro ya se encuentra prestado.");
 
             // 2. Verificar si el usuario existe
-            var usuario = await _context.Usuarios.FindAsync(usuarioId);
-            if (usuario == null) return NotFound("El usuario especificado no existe.");
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("El usuario especificado no existe.");
 
             // 3. Crear el registro del préstamo
-            var prestamo = new Prestamo
+            var loan = new Loan
             {
-                LibroId = libroId,
-                UsuarioId = usuarioId,
-                FechaPrestamo = DateTime.Now
+                BookId = bookId,
+                UserId = userId,
+                LoanDate = DateTime.Now
             };
 
             // 4. Cambiar el estado del libro a NO disponible
-            libro.Disponible = false;
+            book.IsAvailable = false;
 
-            _context.Prestamos.Add(prestamo);
+            _context.Loans.Add(loan);
             await _context.SaveChangesAsync();
 
-            return Ok(new { Mensaje = $"Libro '{libro.Titulo}' prestado con éxito a {usuario.Nombre}." });
+            return Ok(new { Mensaje = $"Libro '{book.Title}' prestado con éxito a {user.Name}." });
         }
 
         // Endpoint para devolver un libro
-        [HttpPost("devolver/{libroId}")]
-        public async Task<IActionResult> DevolverLibro(int libroId)
+        [HttpPost("devolver/{bookId}")]
+        public async Task<IActionResult> DevolverLibro(int bookId)
         {
             // Buscar el préstamo activo de ese libro (que no tenga fecha de devolución)
-            var prestamo = await _context.Prestamos
-                .FirstOrDefaultAsync(p => p.LibroId == libroId && p.FechaDevolucion == null);
+            var loan = await _context.Loans
+                .FirstOrDefaultAsync(l => l.BookId == bookId && l.ReturnDate == null);
 
-            if (prestamo == null) return NotFound("No se encontró ningún préstamo activo para este libro.");
+            if (loan == null) return NotFound("No se encontró ningún préstamo activo para este libro.");
 
-            var libro = await _context.Libros.FindAsync(libroId);
-            if (libro != null)
+            var book = await _context.Books.FindAsync(bookId);
+            if (book != null)
             {
                 // Cambiar el libro a disponible nuevamente
-                libro.Disponible = true;
+                book.IsAvailable = true;
             }
 
             // Registrar la fecha de devolución
-            prestamo.FechaDevolucion = DateTime.Now;
+            loan.ReturnDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return Ok(new { Mensaje = "El libro ha sido devuelto y está disponible nuevamente." });

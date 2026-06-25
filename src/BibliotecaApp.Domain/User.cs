@@ -23,6 +23,9 @@ public class User
     // Rol 3: pueden usar esto para diferenciar "admin" de "user" si hace falta.
     public string Role { get; set; } = "user";
 
+    // Fecha de registro del usuario (requerido por Rol 3 / AuthController).
+    public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
+
     // Navegación: préstamos asociados a este usuario
     public List<Loan> Loans { get; set; } = new();
 }

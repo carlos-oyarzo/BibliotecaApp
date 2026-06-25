@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using biblioteca_API.Domain;
+using biblioteca_API.Models;
 using biblioteca_API.Services;
 
 namespace biblioteca_API.Controllers;
@@ -18,6 +18,6 @@ public class AuthController : ControllerBase
         var token = await _authService.LoginAsync(request);
         if (token == null) return Unauthorized(new { mensaje = "Email o contraseña incorrectos" });
 
-        return Ok(new { token }); // El Frontend recibe el token exitosamente aquí
+        return Ok(new { token });
     }
 }

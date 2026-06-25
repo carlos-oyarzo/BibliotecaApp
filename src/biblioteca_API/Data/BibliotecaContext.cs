@@ -1,4 +1,4 @@
-﻿using biblioteca_API.Domain;
+﻿using BibliotecaApp.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace biblioteca_API.Data
@@ -9,11 +9,8 @@ namespace biblioteca_API.Data
         {
         }
 
-        public DbSet<Libro> Libros { get; set; }
-        public DbSet<Usuarios> Usuarios { get; set; }
-        public DbSet<Prestamo> Prestamos { get; set; }
-
+        public DbSet<Book> Books { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Loan> Loans { get; set; }
     }
 }
-    
-
