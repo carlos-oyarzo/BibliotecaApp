@@ -1,7 +1,7 @@
 ﻿using BibliotecaApp.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace biblioteca_API.Data
+namespace BibliotecaApp.Data
 {
     public class BibliotecaContext : DbContext
     {

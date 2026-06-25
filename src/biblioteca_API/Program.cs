@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using biblioteca_API.Data;
-using biblioteca_API.Services;
+using BibliotecaApp.Data;
+using BibliotecaApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

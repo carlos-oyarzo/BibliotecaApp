@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Data;
+using BibliotecaApp.Data;
 using BibliotecaApp.Domain;
 
 namespace biblioteca_API.Controllers;

@@ -1,4 +1,4 @@
-namespace biblioteca_API.Models;
+namespace BibliotecaApp.Services;
 
 public class LoginRequest
 {

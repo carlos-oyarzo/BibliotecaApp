@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BibliotecaApp.Domain\BibliotecaApp.Domain.csproj" />
+    <ProjectReference Include="..\BibliotecaApp.Services\BibliotecaApp.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

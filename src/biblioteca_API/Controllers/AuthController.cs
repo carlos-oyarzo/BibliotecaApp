@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using biblioteca_API.Models;
-using biblioteca_API.Services;
+using BibliotecaApp.Services;
 
 namespace biblioteca_API.Controllers;
 

@@ -1,13 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Data;
-using biblioteca_API.Models;
+using BibliotecaApp.Data;
 using BibliotecaApp.Domain;
 
-namespace biblioteca_API.Services;
+namespace BibliotecaApp.Services;
 
 public class AuthService
 {
