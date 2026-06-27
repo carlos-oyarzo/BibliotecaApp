@@ -5,7 +5,6 @@ namespace BibliotecaApp.Domain;
 // =============================================
 // Entidad de préstamo del sistema. Representa el acto de prestar un libro
 // a un usuario, con fecha de préstamo, vencimiento y devolución.
-// Es un POCO puro: sin lógica de negocio, sin atributos de EF Core.
 // La regla de vencimiento (14 días) la aplica el LoanService, no la entidad.
 // =============================================
 
