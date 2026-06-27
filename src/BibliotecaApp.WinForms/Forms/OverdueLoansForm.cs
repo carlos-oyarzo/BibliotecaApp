@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Listado de préstamos vencidos. Muestra los préstamos cuya devolución está atrasada.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class OverdueLoansForm : Form

@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Diseño generado por el diseñador de Windows Forms para LoanManagementForm (auto-generado).
+
 namespace BibliotecaApp.WinForms.Forms;
 
 partial class LoanManagementForm

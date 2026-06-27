@@ -1,4 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- ─── Responsable: Alejandro Viana — Rol 3 (backend-usuarios-libros) ─── -->
+<!-- Proyecto de dominio (class library). Contiene las entidades compartidas Book, User y Prestamo. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>

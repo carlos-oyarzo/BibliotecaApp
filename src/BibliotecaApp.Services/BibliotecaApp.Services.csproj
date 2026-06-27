@@ -1,8 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- ─── Responsable: Equipo — Todos los roles ─── -->
+<!-- Proyecto de servicios (class library). Lógica de negocio que coordina dominio y datos. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\BibliotecaApp.Domain\BibliotecaApp.Domain.csproj" />
     <ProjectReference Include="..\BibliotecaApp.Data\BibliotecaApp.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

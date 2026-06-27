@@ -1,29 +1,33 @@
+// ─── Responsable: Alejandro Viana — Rol 3 (backend-usuarios-libros) ───
+// Controlador REST para la gestión de libros (CRUD) sobre la API.
+
+using BibliotecaApp.Domain;
+using BibliotecaApp.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Models;
 
 [Route("api/Libros")]
 [ApiController]
 public class LibrosController : ControllerBase
 {
-    private readonly BibliotecaContext _context;
-    public LibrosController(BibliotecaContext context)
+    private readonly IBookService _bookService;
+
+    public LibrosController(IBookService bookService)
     {
-        _context = context;
+        _bookService = bookService;
     }
 
     // GET: api/Libros
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
     {
-        return await _context.Books.ToListAsync();
+        return await _bookService.GetAllAsync();
     }
 
     // GET: api/Libros/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Book>> GetBook(int id)
     {
-        var book = await _context.Books.FindAsync(id);
+        var book = await _bookService.GetByIdAsync(id);
 
         if (book == null)
         {
@@ -42,22 +46,10 @@ public class LibrosController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(book).State = EntityState.Modified;
-
-        try
+        var updated = await _bookService.UpdateAsync(id.Value, book);
+        if (updated == null)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!BookExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            return NotFound();
         }
 
         return NoContent();
@@ -67,30 +59,26 @@ public class LibrosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Book>> PostBook(Book book)
     {
-        _context.Books.Add(book);
-        await _context.SaveChangesAsync();
+        var created = await _bookService.CreateAsync(book);
 
-        return CreatedAtAction("GetBook", new { id = book.Id }, book);
+        return CreatedAtAction("GetBook", new { id = created.Id }, created);
     }
 
     // DELETE: api/Libros/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBook(int? id)
     {
-        var book = await _context.Books.FindAsync(id);
-        if (book == null)
+        if (id is null)
         {
             return NotFound();
         }
 
-        _context.Books.Remove(book);
-        await _context.SaveChangesAsync();
+        var deleted = await _bookService.DeleteAsync(id.Value);
+        if (!deleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
-    }
-
-    private bool BookExists(int? id)
-    {
-        return _context.Books.Any(e => e.Id == id);
     }
 }

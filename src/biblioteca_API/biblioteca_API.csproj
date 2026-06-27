@@ -1,15 +1,24 @@
+<!-- ─── Responsable: Juan Acevedo — Rol 1 (db-seguridad) ─── -->
+<!-- Proyecto Web API ASP.NET Core. Expone los endpoints REST de la biblioteca. -->
+
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-    <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
+    <ProjectReference Include="..\BibliotecaApp.Data\BibliotecaApp.Data.csproj" />
+    <ProjectReference Include="..\BibliotecaApp.Domain\BibliotecaApp.Domain.csproj" />
+    <ProjectReference Include="..\BibliotecaApp.Services\BibliotecaApp.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

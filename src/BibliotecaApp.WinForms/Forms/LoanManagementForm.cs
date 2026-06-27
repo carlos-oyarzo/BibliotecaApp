@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Gestión de préstamos. Registra préstamos de libros y marca devoluciones.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class LoanManagementForm : Form
@@ -8,30 +11,38 @@ public partial class LoanManagementForm : Form
         this.Load += LoanManagementForm_Load;
     }
 
-    private void LoanManagementForm_Load(object sender, EventArgs e)
+    private async void LoanManagementForm_Load(object sender, EventArgs e)
     {
-        LoadCombos();
+        await LoadCombos();
         SetupGridColumns();
         LoadActiveLoans();
     }
 
-    // Fill the user and book dropdowns with sample data
-    // TODO: replace with real service calls
-    private void LoadCombos()
+    // Fill the user and book dropdowns from the API REST
+    private async Task LoadCombos()
     {
-        cmbUsers.Items.Clear();
-        cmbUsers.Items.AddRange(new object[]
-            { "Alice Johnson", "Bob Martinez", "Carol White" });
-        cmbUsers.SelectedIndex = 0;
+        try
+        {
+            var users = await Program.Api.GetUsersAsync();
+            cmbUsers.DataSource = users;
+            cmbUsers.DisplayMember = "Name";
+            cmbUsers.ValueMember = "Id";
 
-        cmbBooks.Items.Clear();
-        cmbBooks.Items.AddRange(new object[]
-            { "Clean Code", "Design Patterns", "The Pragmatic Programmer" });
-        cmbBooks.SelectedIndex = 0;
+            var books = await Program.Api.GetBooksAsync();
+            cmbBooks.DataSource = books;
+            cmbBooks.DisplayMember = "Title";
+            cmbBooks.ValueMember = "Id";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading data: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void SetupGridColumns()
     {
+        dgvActiveLoans.AutoGenerateColumns = false;
         dgvActiveLoans.Columns.Clear();
 
         dgvActiveLoans.Columns.Add(new DataGridViewTextBoxColumn
@@ -46,7 +57,8 @@ public partial class LoanManagementForm : Form
         { DataPropertyName = "DueDate", HeaderText = "Due Date", Width = 110 });
     }
 
-    // TODO: replace with _loanService.GetActiveLoans()
+    // TODO: replace sample data when a GET api/Prestamos endpoint exists in the API.
+    //       Currently the API only exposes POST (borrow) and POST devolver (return).
     private void LoadActiveLoans()
     {
         var sampleLoans = new[]
@@ -59,26 +71,36 @@ public partial class LoanManagementForm : Form
         dgvActiveLoans.DataSource = sampleLoans;
     }
 
-    private void btnBorrow_Click(object sender, EventArgs e)
+    private async void btnBorrow_Click(object sender, EventArgs e)
     {
-        if (cmbUsers.SelectedItem == null || cmbBooks.SelectedItem == null)
+        if (cmbUsers.SelectedValue == null || cmbBooks.SelectedValue == null)
         {
             MessageBox.Show("Please select a user and a book.",
                 "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
-        string user = cmbUsers.SelectedItem.ToString() ?? "";
-        string book = cmbBooks.SelectedItem.ToString() ?? "";
+        int userId = Convert.ToInt32(cmbUsers.SelectedValue);
+        int bookId = Convert.ToInt32(cmbBooks.SelectedValue);
+        string user = cmbUsers.Text;
+        string book = cmbBooks.Text;
 
-        // TODO: replace with _loanService.BorrowBook(userId, bookId)
-        MessageBox.Show($"Book '{book}' lent to '{user}' successfully.",
-            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        try
+        {
+            var result = await Program.Api.BorrowBookAsync(bookId, userId);
+            MessageBox.Show(result?.Mensaje ?? $"Book '{book}' lent to '{user}' successfully.",
+                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-        LoadActiveLoans();
+            LoadActiveLoans();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error lending book: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
-    private void btnReturn_Click(object sender, EventArgs e)
+    private async void btnReturn_Click(object sender, EventArgs e)
     {
         if (dgvActiveLoans.SelectedRows.Count == 0)
         {
@@ -88,12 +110,24 @@ public partial class LoanManagementForm : Form
         }
 
         var row = dgvActiveLoans.SelectedRows[0];
+        int id = Convert.ToInt32(row.Cells["Id"].Value);
         string book = row.Cells["Book"].Value?.ToString() ?? "";
 
-        // TODO: replace with _loanService.ReturnBook(loanId)
-        MessageBox.Show($"Book '{book}' returned successfully.",
-            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        // TODO: store real loan/book IDs from the API. The grid currently shows
+        //       sample data with fake IDs, so this calls ReturnBookAsync(id) which
+        //       the API treats as a bookId. Replace once GET api/Prestamos exists.
+        try
+        {
+            var result = await Program.Api.ReturnBookAsync(id);
+            MessageBox.Show(result?.Mensaje ?? $"Book '{book}' returned successfully.",
+                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-        LoadActiveLoans();
+            LoadActiveLoans();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error returning book: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

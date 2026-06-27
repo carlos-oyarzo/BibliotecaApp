@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Pantalla principal del dashboard.Menu de navegación a cada módulo de la biblioteca.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class DashboardForm : Form

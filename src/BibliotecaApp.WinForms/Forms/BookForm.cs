@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Formulario de alta/edición de un libro. Llama a la API REST al guardar.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class BookForm : Form
@@ -23,7 +26,7 @@ public partial class BookForm : Form
         this.Text = "Edit Book";
     }
 
-    private void btnSave_Click(object sender, EventArgs e)
+    private async void btnSave_Click(object sender, EventArgs e)
     {
         string title = txtTitle.Text.Trim();
         string author = txtAuthor.Text.Trim();
@@ -53,22 +56,37 @@ public partial class BookForm : Form
             return;
         }
 
-        // _bookId == 0 means new book, otherwise editing
-        if (_bookId == 0)
+        var book = new BookDto
         {
-            // TODO: replace with _bookService.CreateBook(title, author, isbn)
-            MessageBox.Show($"Book '{title}' created successfully.",
-                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        else
-        {
-            // TODO: replace with _bookService.UpdateBook(_bookId, title, author, isbn)
-            MessageBox.Show($"Book '{title}' updated successfully.",
-                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+            Id = _bookId,
+            Title = title,
+            Author = author,
+            ISBN = isbn
+        };
 
-        this.DialogResult = DialogResult.OK;
-        this.Close();
+        try
+        {
+            if (_bookId == 0)
+            {
+                await Program.Api.CreateBookAsync(book);
+                MessageBox.Show($"Book '{title}' created successfully.",
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                await Program.Api.UpdateBookAsync(_bookId, book);
+                MessageBox.Show($"Book '{title}' updated successfully.",
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error saving book: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void btnCancel_Click(object sender, EventArgs e)

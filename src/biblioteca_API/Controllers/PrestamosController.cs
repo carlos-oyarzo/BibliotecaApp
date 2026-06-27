@@ -1,6 +1,9 @@
-﻿using biblioteca_API.Models;
+﻿// ─── Responsable: Carlos — Rol 4 (backend-prestamos) ───
+// Controlador REST para préstamos. Registra y devuelve préstamos de libros.
+
+using BibliotecaApp.Domain;
+using BibliotecaApp.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace biblioteca_API.Controllers
@@ -9,56 +12,45 @@ namespace biblioteca_API.Controllers
     [ApiController]
     public class PrestamosController : ControllerBase
     {
-        private readonly BibliotecaContext _context;
+        private readonly ILoanService _loanService;
 
-        public PrestamosController(BibliotecaContext context)
+        public PrestamosController(ILoanService loanService)
         {
-            _context = context;
+            _loanService = loanService;
         }
 
         [HttpPost]
         public async Task<IActionResult> RegistrarPrestamo(int bookId, int userId)
         {
-            var book = await _context.Books.FindAsync(bookId);
-            if (book == null) return NotFound("El libro especificado no existe.");
-            if (!book.IsAvailable) return BadRequest("El libro ya se encuentra prestado.");
-
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null) return NotFound("El usuario especificado no existe.");
-
-            var prestamo = new Prestamo
+            try
             {
-                BookId = bookId,
-                UserId = userId,
-                LoanDate = DateTime.Now
-            };
+                var prestamo = await _loanService.BorrowBookAsync(bookId, userId);
 
-            book.IsAvailable = false;
-
-            _context.Prestamos.Add(prestamo);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Mensaje = $"Libro '{book.Title}' prestado con éxito a {user.Name}." });
+                return Ok(new { Mensaje = $"Libro '{prestamo.Book?.Title}' prestado con éxito a {prestamo.User?.Name}." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("devolver/{bookId}")]
         public async Task<IActionResult> DevolverLibro(int bookId)
         {
-            var prestamo = await _context.Prestamos
-                .FirstOrDefaultAsync(p => p.BookId == bookId && p.ReturnDate == null);
-
-            if (prestamo == null) return NotFound("No se encontró ningún préstamo activo para este libro.");
-
-            var book = await _context.Books.FindAsync(bookId);
-            if (book != null)
+            try
             {
-                book.IsAvailable = true;
+                await _loanService.ReturnBookAsync(bookId);
+
+                return Ok(new { Mensaje = "El libro ha sido devuelto y está disponible nuevamente." });
             }
-
-            prestamo.ReturnDate = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-            return Ok(new { Mensaje = "El libro ha sido devuelto y está disponible nuevamente." });
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

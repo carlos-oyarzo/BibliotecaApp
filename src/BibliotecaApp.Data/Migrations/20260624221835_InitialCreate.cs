@@ -1,10 +1,13 @@
-﻿using System;
+﻿// ─── Responsable: Juan Acevedo — Rol 1 (db-seguridad) ───
+// Migración inicial de EF Core. Crea el esquema de la base de datos.
+
+using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace biblioteca_API.Migrations
+namespace BibliotecaApp.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -13,14 +16,14 @@ namespace biblioteca_API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Books",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(type: "longtext", nullable: false),
                     Author = table.Column<string>(type: "longtext", nullable: false),
                     IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false)
@@ -29,14 +32,14 @@ namespace biblioteca_API.Migrations
                 {
                     table.PrimaryKey("PK_Books", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     Email = table.Column<string>(type: "longtext", nullable: false)
                 },
@@ -44,14 +47,14 @@ namespace biblioteca_API.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Prestamos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     BookId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     LoanDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -73,7 +76,7 @@ namespace biblioteca_API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prestamos_BookId",

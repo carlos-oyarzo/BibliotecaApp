@@ -1,4 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- ─── Responsable: Juan Acevedo — Rol 1 (db-seguridad) ─── -->
+<!-- Proyecto de acceso a datos (class library). Configura EF Core con MySQL. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\BibliotecaApp.Domain\BibliotecaApp.Domain.csproj" />

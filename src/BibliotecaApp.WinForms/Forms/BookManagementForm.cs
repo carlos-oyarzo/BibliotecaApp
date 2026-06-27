@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Listado y gestión de libros. Carga la grilla y abre BookForm para alta/edición.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class BookManagementForm : Form
@@ -8,14 +11,15 @@ public partial class BookManagementForm : Form
         this.Load += BookManagementForm_Load;
     }
 
-    private void BookManagementForm_Load(object sender, EventArgs e)
+    private async void BookManagementForm_Load(object sender, EventArgs e)
     {
         SetupGridColumns();
-        LoadBooks();
+        await LoadBooks();
     }
 
     private void SetupGridColumns()
     {
+        dgvBooks.AutoGenerateColumns = false;
         dgvBooks.Columns.Clear();
 
         dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
@@ -28,29 +32,28 @@ public partial class BookManagementForm : Form
         { DataPropertyName = "ISBN", HeaderText = "ISBN", Width = 160 });
     }
 
-    // TODO: replace sample data with _bookService.GetAllBooks()
-    private void LoadBooks()
+    private async Task LoadBooks()
     {
-        var sampleBooks = new[]
+        try
         {
-            new { Id = 1, Title = "Clean Code",
-                  Author = "Robert C. Martin", ISBN = "978-0132350884" },
-            new { Id = 2, Title = "The Pragmatic Programmer",
-                  Author = "Andrew Hunt",       ISBN = "978-0201616224" },
-            new { Id = 3, Title = "Design Patterns",
-                  Author = "Gang of Four",      ISBN = "978-0201633610" },
-        };
-        dgvBooks.DataSource = sampleBooks;
+            var books = await Program.Api.GetBooksAsync();
+            dgvBooks.DataSource = books;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading books: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
-    private void btnAdd_Click(object sender, EventArgs e)
+    private async void btnAdd_Click(object sender, EventArgs e)
     {
         using var form = new BookForm();
         if (form.ShowDialog() == DialogResult.OK)
-            LoadBooks();
+            await LoadBooks();
     }
 
-    private void btnEdit_Click(object sender, EventArgs e)
+    private async void btnEdit_Click(object sender, EventArgs e)
     {
         if (dgvBooks.SelectedRows.Count == 0)
         {
@@ -67,10 +70,10 @@ public partial class BookManagementForm : Form
 
         using var form = new BookForm(id, title, author, isbn);
         if (form.ShowDialog() == DialogResult.OK)
-            LoadBooks();
+            await LoadBooks();
     }
 
-    private void btnDelete_Click(object sender, EventArgs e)
+    private async void btnDelete_Click(object sender, EventArgs e)
     {
         if (dgvBooks.SelectedRows.Count == 0)
         {
@@ -80,6 +83,7 @@ public partial class BookManagementForm : Form
         }
 
         var row = dgvBooks.SelectedRows[0];
+        int id = Convert.ToInt32(row.Cells["Id"].Value);
         string title = row.Cells["Title"].Value?.ToString() ?? "";
 
         var confirm = MessageBox.Show(
@@ -88,31 +92,38 @@ public partial class BookManagementForm : Form
 
         if (confirm == DialogResult.Yes)
         {
-            // TODO: replace with _bookService.DeleteBook(id)
-            MessageBox.Show("Book deleted successfully.",
-                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadBooks();
+            try
+            {
+                await Program.Api.DeleteBookAsync(id);
+                MessageBox.Show("Book deleted successfully.",
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await LoadBooks();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting book: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 
-    private void btnSearch_Click(object sender, EventArgs e)
+    private async void btnSearch_Click(object sender, EventArgs e)
     {
         string query = txtSearch.Text.Trim().ToLower();
-        if (string.IsNullOrEmpty(query)) { LoadBooks(); return; }
+        if (string.IsNullOrEmpty(query)) { await LoadBooks(); return; }
 
-        var all = new[]
+        try
         {
-            new { Id = 1, Title = "Clean Code",
-                  Author = "Robert C. Martin", ISBN = "978-0132350884" },
-            new { Id = 2, Title = "The Pragmatic Programmer",
-                  Author = "Andrew Hunt",       ISBN = "978-0201616224" },
-            new { Id = 3, Title = "Design Patterns",
-                  Author = "Gang of Four",      ISBN = "978-0201633610" },
-        };
-
-        dgvBooks.DataSource = all
-            .Where(b => b.Title.ToLower().Contains(query)
-                     || b.Author.ToLower().Contains(query))
-            .ToArray();
+            var all = await Program.Api.GetBooksAsync();
+            dgvBooks.DataSource = all
+                .Where(b => b.Title.ToLower().Contains(query)
+                         || b.Author.ToLower().Contains(query))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error searching books: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

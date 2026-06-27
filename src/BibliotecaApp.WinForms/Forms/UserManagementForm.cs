@@ -1,3 +1,6 @@
+// ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ───
+// Listado y gestión de usuarios. Carga la grilla desde la API REST.
+
 namespace BibliotecaApp.WinForms.Forms;
 
 public partial class UserManagementForm : Form
@@ -8,14 +11,15 @@ public partial class UserManagementForm : Form
         this.Load += UserManagementForm_Load;
     }
 
-    private void UserManagementForm_Load(object sender, EventArgs e)
+    private async void UserManagementForm_Load(object sender, EventArgs e)
     {
         SetupGridColumns();
-        LoadUsers();
+        await LoadUsers();
     }
 
     private void SetupGridColumns()
     {
+        dgvUsers.AutoGenerateColumns = false;
         dgvUsers.Columns.Clear();
 
         dgvUsers.Columns.Add(new DataGridViewTextBoxColumn
@@ -28,27 +32,25 @@ public partial class UserManagementForm : Form
         { DataPropertyName = "Role", HeaderText = "Role", Width = 120 });
     }
 
-    // TODO: replace with _userService.GetAllUsers()
-    private void LoadUsers()
+    private async Task LoadUsers()
     {
-        var sampleUsers = new[]
+        try
         {
-            new { Id = 1, Name = "Alice Johnson", Email = "alice@library.com",
-                  Role = "Admin" },
-            new { Id = 2, Name = "Bob Martinez",  Email = "bob@library.com",
-                  Role = "User" },
-            new { Id = 3, Name = "Carol White",   Email = "carol@library.com",
-                  Role = "User" },
-        };
-        dgvUsers.DataSource = sampleUsers;
+            var users = await Program.Api.GetUsersAsync();
+            dgvUsers.DataSource = users;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading users: {ex.Message}",
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void btnAdd_Click(object sender, EventArgs e)
     {
-        // TODO: open a UserForm in "new user" mode
+        // TODO: open a UserForm in "new user" mode (form coming from Role 3)
         MessageBox.Show("Add User form — coming from Role 3.",
             "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        LoadUsers();
     }
 
     private void btnEdit_Click(object sender, EventArgs e)
@@ -63,13 +65,12 @@ public partial class UserManagementForm : Form
         var row = dgvUsers.SelectedRows[0];
         string name = row.Cells["Name"].Value?.ToString() ?? "";
 
-        // TODO: open UserForm in "edit user" mode
+        // TODO: open UserForm in "edit user" mode (form coming from Role 3)
         MessageBox.Show($"Edit form for '{name}' — coming from Role 3.",
             "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        LoadUsers();
     }
 
-    private void btnDelete_Click(object sender, EventArgs e)
+    private async void btnDelete_Click(object sender, EventArgs e)
     {
         if (dgvUsers.SelectedRows.Count == 0)
         {
@@ -79,6 +80,7 @@ public partial class UserManagementForm : Form
         }
 
         var row = dgvUsers.SelectedRows[0];
+        int id = Convert.ToInt32(row.Cells["Id"].Value);
         string name = row.Cells["Name"].Value?.ToString() ?? "";
 
         var confirm = MessageBox.Show(
@@ -87,10 +89,18 @@ public partial class UserManagementForm : Form
 
         if (confirm == DialogResult.Yes)
         {
-            // TODO: replace with _userService.DeleteUser(id)
-            MessageBox.Show("User deleted successfully.",
-                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadUsers();
+            try
+            {
+                await Program.Api.DeleteUserAsync(id);
+                MessageBox.Show("User deleted successfully.",
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await LoadUsers();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting user: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -1,29 +1,33 @@
+// ─── Responsable: Alejandro Viana — Rol 3 (backend-usuarios-libros) ───
+// Controlador REST para la gestión de usuarios (CRUD) sobre la API.
+
+using BibliotecaApp.Domain;
+using BibliotecaApp.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using biblioteca_API.Models;
 
 [Route("api/[controller]")]
 [ApiController]
 public class UsuariosController : ControllerBase
 {
-    private readonly BibliotecaContext _context;
-    public UsuariosController(BibliotecaContext context)
+    private readonly IUserService _userService;
+
+    public UsuariosController(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     // GET: api/Usuarios
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        return await _userService.GetAllAsync();
     }
 
     // GET: api/Usuarios/5
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _userService.GetByIdAsync(id);
 
         if (user == null)
         {
@@ -42,22 +46,10 @@ public class UsuariosController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
-
-        try
+        var updated = await _userService.UpdateAsync(id.Value, user);
+        if (updated == null)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!UserExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            return NotFound();
         }
 
         return NoContent();
@@ -67,30 +59,26 @@ public class UsuariosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> PostUser(User user)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        var created = await _userService.CreateAsync(user);
 
-        return CreatedAtAction("GetUser", new { id = user.Id }, user);
+        return CreatedAtAction("GetUser", new { id = created.Id }, created);
     }
 
     // DELETE: api/Usuarios/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int? id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        if (id is null)
         {
             return NotFound();
         }
 
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        var deleted = await _userService.DeleteAsync(id.Value);
+        if (!deleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
-    }
-
-    private bool UserExists(int? id)
-    {
-        return _context.Users.Any(e => e.Id == id);
     }
 }

@@ -1,18 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- ─── Responsable: Deisy Jaramillo — Rol 2 (frontend) ─── -->
+<!-- Proyecto Windows Forms. Frontend de escritorio para la biblioteca. -->
 
-  <ItemGroup>
-    <ProjectReference Include="..\BibliotecaApp.Domain\BibliotecaApp.Domain.csproj" />
-    <ProjectReference Include="..\BibliotecaApp.Data\BibliotecaApp.Data.csproj" />
-    <ProjectReference Include="..\BibliotecaApp.Services\BibliotecaApp.Services.csproj" />
-  </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-  </ItemGroup>
+  <!-- WinForms ahora consume la API vía HTTP — no necesita referencias directas a Data/Services/EF Core -->
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
